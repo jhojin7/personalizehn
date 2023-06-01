@@ -1,83 +1,66 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>List of Links</title>
+    <title>Display Data with Dropdown</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var data = {{ links }};
+            
+            function filterData(selectedDate) {
+                if (!selectedDate) {
+                    return data;
+                }
+                
+                return data.filter(function(item) {
+                    return item.date === selectedDate;
+                });
+            }
+            
+            function displayData(filteredData) {
+                var table = '<table><thead><tr><th>Date</th><th>Title</th><th>URL</th></tr></thead><tbody>';
+                filteredData.forEach(function(item) {
+                    table += '<tr><td>' + item.date + '</td><td>' + item.title + '</td><td>' + item.url + '</td></tr>';
+                });
+                table += '</tbody></table>';
+                $('#data-table').html(table);
+            }
+            
+            $('#dropdown').change(function() {
+                var selectedDate = $(this).val();
+                var filteredData = filterData(selectedDate);
+                displayData(filteredData);
+            });
+        });
+    </script>
 </head>
-
 <body>
-    <h1>List of Links</h1>
-
-    <select id="link-select" onchange="updateLink()">
-        <option value="" selected disabled>Select a Link</option>
-        {% for link in links %}
-        <option value="{{ link.id }}">{{ link.title }}</option>
+    <select id="dropdown">
+        <option value="">All Dates</option>
+        {% for option in dropdown_options %}
+            <option value="{{ option }}">{{ option }}</option>
         {% endfor %}
     </select>
-
-
-    <ul>
-        {% for link in links %}
-        <li>
-            <a href="{{ link.url }}" {% if link.viewed %} style="color: gray;" {% endif %}
-                onclick="markAsViewed({{link.id}})">{{ link.title }}</a>
-            <button onclick="markAsLiked({{ link.id }})" {% if link.liked %} style="color: gray;" {% endif%}>Like</button>
-        </li>
-        {% endfor %}
-    </ul>
-
-    <script>
-        function updateLinks() {
-            const selectedDate = document.getElementById("date").value;
-            const linksList = document.getElementById("links-list");
-            const links = {{ links | tojson }};
-            
-            // Clear the existing links
-            linksList.innerHTML = "";
-
-            // Filter the links based on the selected date and re-populate the list
-            const filteredLinks = links.filter(link => link.date === selectedDate);
-            filteredLinks.forEach(link => {
-                const li = document.createElement("li");
-                const a = document.createElement("a");
-                a.href = link.url;
-                if (link.viewed) {
-                    a.style.color = "gray";
-                }
-                a.textContent = link.title;
-                li.appendChild(a);
-                
-                if (!link.viewed) {
-                    const markAsViewedBtn = document.createElement("button");
-                    markAsViewedBtn.textContent = "Mark as Viewed";
-                    markAsViewedBtn.addEventListener("click", () => markAsViewed(link.id));
-                    li.appendChild(markAsViewedBtn);
-                }
-                
-                if (!link.liked) {
-                    const markAsLikedBtn = document.createElement("button");
-                    markAsLikedBtn.textContent = "Like";
-                    markAsLikedBtn.addEventListener("click", () => markAsLiked(link.id));
-                    li.appendChild(markAsLikedBtn);
-                }
-                
-                linksList.appendChild(li);
-            });
-        }
-
-        async function markAsLiked(id) {
-            fetch(`/like/${id}`, { method: 'POST' });
-            location.reload();
-        }
-
-
-        async function markAsViewed(id) {
-            fetch(`/link/${id}`, { method: 'POST' });
-            location.reload();
-        }
-    </script>
+    
+    <div id="data-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                    <tr>
+                        <td>{{ item.date }}</td>
+                        <td>{{ item.title }}</td>
+                        <td>{{ item.url }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
-
 </html>

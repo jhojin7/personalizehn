@@ -13,7 +13,8 @@ templates = Jinja2Templates(directory="")
 # Step 4: Create the data storage
 
 # df = pd.DataFrame(data)
-df = pd.read_csv("data.csv")
+DATAFILE = "data/fromgithub2.csv"
+df = pd.read_csv(DATAFILE)
 
 # Step 5: Define the routes and views
 @app.get("/")
@@ -21,22 +22,16 @@ def index_page(req: Request):
     return templates.TemplateResponse("index.html", {
         "request": req,
         "links": df.to_dict(orient="records"),
-        "dropdown_options": list(set(df["date"])),
     })
 
-@app.get("/data")
-def data_itself():
-    return json.loads(df.to_json(orient="records"))
-    # return JSONResponse(df.to_json(orient="records"))
-
-@app.post("/link/{id}")
+@app.post("/click/{id}")
 def mark_as_viewed(id: int):
-    df.loc[df['id'] == id, 'viewed'] = 1
-    df.to_csv("data.csv")
+    df.loc[df['id'] == id, 'visited'] = 1
+    df.to_csv(DATAFILE)
     return {"message": "Link marked as viewed"}
 
-@app.post("/like/{id}")
-def mark_as_liked(id: int):
-    df.loc[df['id'] == id, 'liked'] = 1
-    df.to_csv("data.csv")
-    return {"message": "Link marked as liked"}
+# @app.post("/like/{id}")
+# def mark_as_liked(id: int):
+#     df.loc[df['id'] == id, 'liked'] = 1
+#     df.to_csv("data.csv")
+#     return {"message": "Link marked as liked"}

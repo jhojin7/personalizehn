@@ -2,45 +2,24 @@
 <html>
 <head>
     <title>Display Data with Dropdown</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            var data = {{ links }};
-            
-            function filterData(selectedDate) {
-                if (!selectedDate) {
-                    return data;
-                }
-                
-                return data.filter(function(item) {
-                    return item.date === selectedDate;
-                });
+            function updateVisited(post_id) {
+                fetch(`/click/${post_id}`, {
+                    method: 'POST',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                })
             }
-            
-            function displayData(filteredData) {
-                var table = '<table><thead><tr><th>Date</th><th>Title</th><th>URL</th></tr></thead><tbody>';
-                filteredData.forEach(function(item) {
-                    table += '<tr><td>' + item.date + '</td><td>' + item.title + '</td><td>' + item.url + '</td></tr>';
-                });
-                table += '</tbody></table>';
-                $('#data-table').html(table);
-            }
-            
-            $('#dropdown').change(function() {
-                var selectedDate = $(this).val();
-                var filteredData = filterData(selectedDate);
-                displayData(filteredData);
-            });
-        });
+
     </script>
 </head>
 <body>
-    <select id="dropdown">
+    <!-- <select id="dropdown">
         <option value="">All Dates</option>
         {% for option in dropdown_options %}
             <option value="{{ option }}">{{ option }}</option>
         {% endfor %}
-    </select>
+    </select> -->
     
     <div id="data-table">
         <table>
@@ -48,15 +27,22 @@
                 <tr>
                     <th>Date</th>
                     <th>Title</th>
-                    <th>URL</th>
+                    <th>Clicked</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in data %}
+                {% for item in links %}
                     <tr>
-                        <td>{{ item.date }}</td>
-                        <td>{{ item.title }}</td>
-                        <td>{{ item.url }}</td>
+                        <td>{{item.time}}</td>
+                        <td
+                            onclick="updateVisited('{{item.id}}')"
+                        ><a href="{{item.url}}" 
+                            >{{ item.title }}</a></td>
+                        {% if item.visited == True %}
+                            <td>(visited)</td>
+                        {% else %}
+                            <td>(not visited)</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

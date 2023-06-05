@@ -13,8 +13,10 @@ templates = Jinja2Templates(directory="")
 # Step 4: Create the data storage
 
 # df = pd.DataFrame(data)
-DATAFILE = "data/fromgithub2.csv"
+DATAFILE = "data/database1.csv"
 df = pd.read_csv(DATAFILE)
+print(df, flush=True)
+
 
 # Step 5: Define the routes and views
 @app.get("/")

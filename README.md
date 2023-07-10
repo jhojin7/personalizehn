@@ -9,6 +9,9 @@
 - Implement incremental learning and continuous deployment at regular interval as new data is aggregated.
 - User customized. GitHub login.
 
+## Resources
+- https://huggingface.co/datasets/julien040/hacker-news-posts
+
 ## TODO
 - [] Refactor. variable naming.
 - [] Dockerize 
